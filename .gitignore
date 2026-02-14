@@ -1,0 +1,42 @@
+# Environment and secrets - never commit
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# Build outputs
+backend/target/
+frontend/dist/
+frontend/node_modules/
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test and coverage
+frontend/coverage/
+backend/.gradle/
+*.lcov
+
+# Maven
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Misc
+*.bak
+*.tmp
+.cache/

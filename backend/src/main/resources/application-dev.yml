@@ -1,0 +1,34 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:futurevest}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${MYSQL_USER:futurevest}
+    password: ${MYSQL_PASSWORD:futurevest}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+# Redis: disable health check in dev when not using Redis
+management:
+  health:
+    redis:
+      enabled: false
+# Optional: exclude Redis when running without it (uncomment if needed)
+# spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+logging:
+  level:
+    com.futurevest: DEBUG
+    org.springframework.web: DEBUG
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000,http://127.0.0.1:3000
