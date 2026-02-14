@@ -61,7 +61,7 @@ app:
     key-id: ${RAZORPAY_KEY_ID:rzp_test_placeholder}
     key-secret: ${RAZORPAY_KEY_SECRET:placeholder_secret}
 
-# Resilience4j defaults
+# Resilience4j
 resilience4j:
   circuitbreaker:
     instances:
@@ -74,3 +74,9 @@ resilience4j:
       default:
         maxAttempts: 3
         waitDuration: 500ms
+  ratelimiter:
+    instances:
+      auth:
+        limitForPeriod: ${RATE_LIMIT_AUTH_PER_PERIOD:20}
+        limitRefreshPeriod: 60s
+        timeoutDuration: 0

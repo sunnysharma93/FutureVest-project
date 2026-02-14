@@ -1,3 +1,7 @@
+# HTTPS: app is behind reverse proxy that terminates TLS
+server:
+  forward-headers-strategy: framework
+
 spring:
   jpa:
     hibernate:
