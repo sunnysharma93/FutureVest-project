@@ -1,0 +1,157 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: futurevest-frontend
+  namespace: futurevest
+  labels:
+    app: futurevest
+    component: frontend
+    environment: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: futurevest
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: futurevest
+        component: frontend
+        environment: production
+    spec:
+      containers:
+      - name: frontend
+        image: futurevest/frontend:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: REACT_APP_API_BASE_URL
+          value: "http://futurevest-backend-service:8080/api/v1"
+        - name: REACT_APP_WS_BASE_URL
+          value: "ws://futurevest-backend-service:8080/ws"
+        - name: REACT_APP_RAZORPAY_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: futurevest-secrets
+              key: razorpay-key-id
+        - name: REACT_APP_ENVIRONMENT
+          value: "production"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_BIND_SERVICE
+        volumeMounts:
+        - name: nginx-cache
+          mountPath: /var/cache/nginx
+        - name: nginx-logs
+          mountPath: /var/log/nginx
+        - name: nginx-tmp
+          mountPath: /var/tmp
+      volumes:
+      - name: nginx-cache
+        emptyDir: {}
+      - name: nginx-logs
+        emptyDir: {}
+      - name: nginx-tmp
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: futurevest-frontend-service
+  namespace: futurevest
+  labels:
+    app: futurevest
+    component: frontend
+    environment: production
+spec:
+  selector:
+    matchLabels:
+      app: futurevest
+      component: frontend
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http
+    protocol: TCP
+  type: ClusterIP
+  sessionAffinity:
+    clientIP:
+      timeoutSeconds: 300
+---
+apiVersion: v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: futurevest-frontend-hpa
+  namespace: futurevest
+  labels:
+    app: futurevest
+    component: frontend
+    environment: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: futurevest-frontend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+      - type: Resource
+        resource:
+          name: memory
+          target:
+            type: Utilization
+            averageUtilization: 80
+---
+apiVersion: v1
+kind: PodDisruptionBudget
+metadata:
+  name: futurevest-frontend-pdb
+  namespace: futurevest
+  labels:
+    app: futurevest
+    component: frontend
+    environment: production
+spec:
+  minAvailable: 2
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: futurevest
+      component: frontend
