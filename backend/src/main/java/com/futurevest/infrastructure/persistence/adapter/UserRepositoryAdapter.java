@@ -3,6 +3,7 @@ package com.futurevest.infrastructure.persistence.adapter;
 import com.futurevest.application.port.out.UserRepository;
 import com.futurevest.domain.entity.User;
 import com.futurevest.infrastructure.persistence.entity.UserEntity;
+import com.futurevest.infrastructure.persistence.entity.UserRole;
 import com.futurevest.infrastructure.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,9 +37,12 @@ public class UserRepositoryAdapter implements UserRepository {
     private User toDomain(UserEntity e) {
         return User.builder()
                 .id(e.getId())
+                .name(e.getName())
                 .email(e.getEmail())
                 .passwordHash(e.getPasswordHash())
-                .displayName(e.getDisplayName())
+                .role(e.getRole() != null ? e.getRole().name() : null)
+                .resumeUrl(e.getResumeUrl())
+                .aadhaarUrl(e.getAadhaarUrl())
                 .enabled(e.isEnabled())
                 .createdAt(e.getCreatedAt())
                 .updatedAt(e.getUpdatedAt())
@@ -48,9 +52,12 @@ public class UserRepositoryAdapter implements UserRepository {
     private UserEntity toEntity(User u) {
         return UserEntity.builder()
                 .id(u.getId())
+                .name(u.getName())
                 .email(u.getEmail())
                 .passwordHash(u.getPasswordHash())
-                .displayName(u.getDisplayName())
+                .role(u.getRole() != null ? UserRole.valueOf(u.getRole()) : UserRole.USER)
+                .resumeUrl(u.getResumeUrl())
+                .aadhaarUrl(u.getAadhaarUrl())
                 .enabled(u.isEnabled())
                 .createdAt(u.getCreatedAt())
                 .updatedAt(u.getUpdatedAt())

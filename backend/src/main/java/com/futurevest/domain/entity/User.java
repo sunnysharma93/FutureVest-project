@@ -14,9 +14,12 @@ import java.util.UUID;
 public class User {
 
     UUID id;
+    String name;
     String email;
     String passwordHash;
-    String displayName;
+    String role; // USER, INVESTOR
+    String resumeUrl;
+    String aadhaarUrl;
     boolean enabled;
     Instant createdAt;
     Instant updatedAt;

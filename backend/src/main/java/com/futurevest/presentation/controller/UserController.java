@@ -29,15 +29,17 @@ public class UserController {
     private static UserProfileDto toDto(User user) {
         UserProfileDto dto = new UserProfileDto();
         dto.setId(user.getId());
+        dto.setName(user.getName());
         dto.setEmail(user.getEmail());
-        dto.setDisplayName(user.getDisplayName());
+        dto.setRole(user.getRole());
         return dto;
     }
 
     @lombok.Data
     public static class UserProfileDto {
         private UUID id;
+        private String name;
         private String email;
-        private String displayName;
+        private String role;
     }
 }
